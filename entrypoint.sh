@@ -128,7 +128,7 @@ AmendConfig(){
    fi
 }
 
-TetsDomainJoin(){
+TestDomainJoin(){
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Domain member status: $(echo ${join_status})"
    if [ "${join_status}" != "Join is OK" ]; then
       echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR:   ***** Container ${samba_name} is not joined to the domain *****"
