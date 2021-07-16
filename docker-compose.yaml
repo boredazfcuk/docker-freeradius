@@ -1,4 +1,8 @@
-version: "3.8"
+version: "2.4"
+
+volumes:
+   freeradius_config:
+      name: freeradius_config
 
 services:
    freeradius:
@@ -9,8 +13,8 @@ services:
          - tld_name=$tld_name
          - domain_computers_sid=$domain_computers_sid
          - vpn_users_sid=$vpn_users_sid
-         - primarykdc=$primarykdc
-         - secondarykdc=$secondarykdc
+         - primarykdc_name=$primarykdc_name
+         - secondarykdc_name=$secondarykdc_name
       ports:
          - "1812:1812"
       image: boredazfcuk/freeradius
@@ -18,3 +22,5 @@ services:
          test: /usr/local/bin/healthcheck.sh
          start_period: 30s
       restart: always
+      volumes:
+         - freeradius_config:/config

@@ -11,9 +11,10 @@ RUN echo "$(date '+%d/%m/%Y - %H:%M:%S') | ***** BUILD STARTED FOR freeradius ${
 echo "$(date '+%d/%m/%Y - %H:%M:%S') | Install requirements" && \
    apt-get update && \
    apt-get install -y ${app_dependencies} && \
-   touch "/etc/freeradius/3.0/mods-config/files/users.vpn" && \
-   ln -s "/etc/freeradius/3.0/mods-config/files/users.vpn" "/etc/freeradius/3.0/users.vpn" && \
-   sed -i '/$INCLUDE users.other/a $INCLUDE /etc/freeradius/3.0/mods-config/files/users.vpn' "/etc/freeradius/3.0/mods-config/files/authorize" && \
+   mkdir --parents "${config_dir}" && \
+   touch "${config_dir}/users.vpn" && \
+   ln -s "${config_dir}/users.vpn" "/etc/freeradius/3.0/users.vpn" && \
+   sed -i '/$INCLUDE users.other/a $INCLUDE ${config_dir}/users.vpn' "/etc/freeradius/3.0/mods-config/files/authorize" && \
    apt-get clean
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
