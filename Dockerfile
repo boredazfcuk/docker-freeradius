@@ -58,7 +58,7 @@ COPY smb.conf "${config_dir}/smb.conf"
 
 RUN echo "$(date '+%d/%m/%Y - %H:%M:%S') | Set permissions on startup script and healthcheck" && \
    chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/healthcheck.sh && \
-   chown 107:108 "${config_dir}/default" "${config_dir}/inner-tunnel" "${config_dir}/mschap" "${config_dir}/ntlm_auth"
+   chown 107:108 "${config_dir}/custom_clients.conf" "${config_dir}/default" "${config_dir}/inner-tunnel" "${config_dir}/mschap" "${config_dir}/ntlm_auth"
 
 HEALTHCHECK --start-period=10s --interval=1m --timeout=10s \
   CMD /usr/local/bin/healthcheck.sh
