@@ -5,13 +5,29 @@ Initialise(){
    echo
    lan_ip="$(hostname -i)"
    samba_name="$(hostname)"
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO     ***** boredazfcuk/freeradius container for freeradius started *****"
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO     ***** $(realpath "${0}") date: $(date --reference=$(realpath "${0}") +%Y/%m/%d_%H:%M) *****"
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO     ***** $(realpath "${0}") hash: $(md5sum $(realpath "${0}") | awk '{print $1}') *****"
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO     $(cat /etc/*-release | grep "^NAME" | sed 's/NAME=//g' | sed 's/"//g') $(cat /etc/*-release | grep "VERSION_ID" | sed 's/VERSION_ID=//g' | sed 's/"//g')"
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO     Samba name: $(samba_name)"
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO     LAN IP Address: ${lan_ip}"
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO     Time zone: ${TZ:=UTC}"
+   join_status="$(net ads testjoin -k 2>&1)"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    ***** boredazfcuk/freeradius container for freeradius started *****"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    ***** $(realpath "${0}") date: $(date --reference=$(realpath "${0}") +%Y/%m/%d_%H:%M) *****"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    ***** $(realpath "${0}") hash: $(md5sum $(realpath "${0}") | awk '{print $1}') *****"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    $(cat /etc/*-release | grep "^NAME" | sed 's/NAME=//g' | sed 's/"//g') $(cat /etc/*-release | grep "VERSION_ID" | sed 's/VERSION_ID=//g' | sed 's/"//g')"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Samba name: ${samba_name}"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    LAN IP Address: ${lan_ip}"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Time zone: ${TZ:=UTC}"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    DNS name: ${dns_name}"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Domain name: ${domain_name}"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    TLD name: ${tld_name}"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Primary KDC: ${primarykdc_name}"
+   if [ "${secondarykdc_name}" ]; then echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Secondary KDC: ${secondarykdc_name}"; fi
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Domain member status: $(echo ${join_status} | cut -d':' -f 1)"
+   if [ "${join_status}" != "Join is OK" ]; then
+      echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR:   ***** Container $(samba_name) is not joined to the domain *****"
+      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    To join the domain, connect to the container with: docker exec -it <container_name> /bin/bash"
+      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    E.g. docker exec -it freeradius /bin/bash"
+      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Then from the terminal prompt, issue the command: net ads join -U Administrator@${dns_name}"
+      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    and enter the password when prompted. This container will restart in 5 minutes"
+      sleep 300
+      exit 1
+   fi
 }
 
 AddFilterStripUsername(){
@@ -117,19 +133,6 @@ AmendConfig(){
       sed -i "s/PRIMARYKDC/${primarykdc_name^^}/" "${smb_file}"
    fi
 
-}
-
-CheckDomainJoin(){
-   join_status="$(net ads testjoin -k 2>&1)"
-   if [ "${join_status}" != "Join is OK" ]; then
-      echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR:   ***** Container $(samba_name) is not joined to the domain *****"
-      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    To join the domain, connect to the container with: docker exec -it <container_name> /bin/bash"
-      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    E.g. docker exec -it freeradius /bin/bash"
-      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Then from the terminal prompt, issue the command: net ads join -U Administrator@${dns_name}"
-      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    and enter the password when prompted. This container will restart in 5 minutes"
-      sleep 300
-      exit 1
-   fi
 }
 
 LaunchFreeRadius(){
