@@ -17,17 +17,17 @@ Initialise(){
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Domain name: ${domain_name}"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    TLD name: ${tld_name}"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    DNS name: ${dns_name}"
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Primary KDC: ${primarykdc_name}"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Primary KDC: ${primarykdc_name}.${dns_name}"
+   if [ "${secondarykdc_name}" ]; then echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Secondary KDC: ${secondarykdc_name}.${dns_name}"; fi
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Domain Computers SID: ${domain_computers_sid}"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    VPN Users SID: ${vpn_users_sid}"
-   if [ "${secondarykdc_name}" ]; then echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Secondary KDC: ${secondarykdc_name}"; fi
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Domain member status: $(echo ${join_status} | cut -d':' -f 1)"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Domain member status: $(echo ${join_status} | tail -1 | cut -d':' -f 1)"
    if [ "${join_status}" != "Join is OK" ]; then
-      echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR:   ***** Container $(samba_name) is not joined to the domain *****"
+      echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR:   ***** Container ${samba_name} is not joined to the domain *****"
       echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    To join the domain, connect to the container with: docker exec -it <container_name> /bin/bash"
       echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    E.g. docker exec -it freeradius /bin/bash"
       echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Then from the terminal prompt, issue the command: net ads join -U Administrator@${dns_name}"
-      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    and enter the password when prompted. This container will restart in 5 minutes"
+      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    ...and enter the password when prompted. This container will restart in 5 minutes"
       sleep 300
       exit 1
    fi
