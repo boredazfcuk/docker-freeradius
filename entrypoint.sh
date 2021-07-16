@@ -6,7 +6,7 @@ Initialise(){
    dns_name="${domain_name}.${tld_name}"
    lan_ip="$(hostname -i)"
    samba_name="$(hostname)"
-   join_status="$(net ads testjoin -k 2>&1 | tail -1)"
+   join_status="$(net ads testjoin -k 2>&1 | tail -1 | cut -d':' -f 1)"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    ***** boredazfcuk/freeradius container for freeradius started *****"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    ***** $(realpath "${0}") date: $(date --reference=$(realpath "${0}") +%Y/%m/%d_%H:%M) *****"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    ***** $(realpath "${0}") hash: $(md5sum $(realpath "${0}") | awk '{print $1}') *****"
@@ -129,7 +129,7 @@ AmendConfig(){
 }
 
 TetsDomainJoin(){
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Domain member status: $(echo ${join_status} | cut -d':' -f 1)"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Domain member status: $(echo ${join_status})"
    if [ "${join_status}" != "Join is OK" ]; then
       echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR:   ***** Container ${samba_name} is not joined to the domain *****"
       echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    To join the domain, connect to the container with: docker exec -it <container_name> /bin/bash"
