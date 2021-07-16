@@ -40,9 +40,12 @@ echo "$(date '+%d/%m/%Y - %H:%M:%S') | Krb5" && \
 echo "$(date '+%d/%m/%Y - %H:%M:%S') | NSSwitch" && \
    mv "/etc/nsswitch.conf" "${config_dir}/nsswitch.conf" && \
    ln -s "${config_dir}/nsswitch.conf" "/etc/nsswitch.conf" && \
-echo "$(date '+%d/%m/%Y - %H:%M:%S') | SMB" && \
+echo "$(date '+%d/%m/%Y - %H:%M:%S') | SMB configuration" && \
    mv "/etc/samba/smb.conf" "${config_dir}/smb.conf" && \
    ln -s "${config_dir}/smb.conf" "/etc/samba/smb.conf" && \
+echo "$(date '+%d/%m/%Y - %H:%M:%S') | Samba" && \
+   mv "/var/lib/samba" "${config_dir}" && \
+   ln -s "${config_dir}/samba/" "/var/lib/samba" && \
    apt-get clean
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
