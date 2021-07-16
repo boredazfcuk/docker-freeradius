@@ -21,7 +21,7 @@ Initialise(){
    if [ "${secondarykdc_name}" ]; then echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Secondary KDC: ${secondarykdc_name}.${dns_name}"; fi
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Domain Computers SID: ${domain_computers_sid}"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    VPN Users SID: ${vpn_users_sid}"
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Starting Winbind: $(/etc/init.d.winbind start)"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Starting Winbind: $(/etc/init.d/winbind start)"
 }
 
 AddFilterStripUsername(){
