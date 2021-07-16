@@ -120,7 +120,7 @@ AmendConfig(){
 }
 
 CheckDomainJoin(){
-   join_status="$(net ads testjoin -k)"
+   join_status="$(net ads testjoin -k 2>&1)"
    if [ "${join_status}" != "Join is OK" ]; then
       echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR:   ***** Container $(samba_name) is not joined to the domain *****"
       echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    To join the domain, connect to the container with: docker exec -it <container_name> /bin/bash"
