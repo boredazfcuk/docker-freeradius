@@ -51,27 +51,27 @@ AddFilterStripUsername(){
 }
 
 AmendConfig(){
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend default file"
    local default_file
    default_file="/etc/freeradius/3.0/sites-available/default"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend default file: ${default_file}"
    if [ "$(grep -c DOMAINNAME "${default_file}")" > 0 ]; then
       sed -i "s/DOMAINNAME/${domain_name}/" "${default_file}"
    fi
    if [ "$(grep -c TLDNAME "${default_file}")" > 0 ]; then
       sed -i "s/TLDNAME/${tld_name}/" "${default_file}"
    fi
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend inner-tunnel file"
    local inner_tunnel_file
    inner_tunnel_file="/etc/freeradius/3.0/sites-available/inner-tunnel"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend inner-tunnel file: ${inner_tunnel_file}"
    if [ "$(grep -c DOMAINNAME "${inner_tunnel_file}")" > 0 ]; then
       sed -i "s/DOMAINNAME/${domain_name}/" "${inner_tunnel_file}"
    fi
    if [ "$(grep -c TLDNAME "${inner_tunnel_file}")" > 0 ]; then
       sed -i "s/TLDNAME/${tld_name}/" "${inner_tunnel_file}"
    fi
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend mschap file"
    local mschap_file
    mschap_file="/etc/freeradius/3.0/mods-available/mschap"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend mschap file: ${mschap_file}"
    if [ "$(grep -c DOMAINNAME "${mschap_file}")" > 0 ]; then
       sed -i "s/DOMAINNAME/${domain_name^^}/g" "${mschap_file}"
    fi
@@ -87,9 +87,9 @@ AmendConfig(){
    if [ "$(grep -c DOMAINNAME "${ntlm_auth_file}")" > 0 ]; then
       sed -i "s/DOMAINNAME/${domain_name^^}/" "${ntlm_auth_file}"
    fi
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend krb5 file"
    local krb5_file
    krb5_file="${config_dir}/krb5.conf"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend krb5 file: ${krb5_file}"
    if [ "$(grep -c LCDOMAINNAME "${krb5_file}")" > 0 ]; then
       sed -i "s/LCDOMAINNAME/${domain_name,,}/" "${krb5_file}"
    fi
@@ -112,9 +112,9 @@ AmendConfig(){
    else
       sed -i "/SECONDARYKDC/d" "${krb5_file}"
    fi
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend smb file"
    local smb_file
    smb_file="/etc/samba/smb.conf"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend smb file: ${smb_file}"
    if [ "$(grep -c LCDOMAINNAME "${smb_file}")" > 0 ]; then
       sed -i "s/LCDOMAINNAME/${domain_name,,}/" "${smb_file}"
    fi
@@ -127,12 +127,12 @@ AmendConfig(){
    if [ "$(grep -c PRIMARYKDC "${smb_file}")" > 0 ]; then
       sed -i "s/PRIMARYKDC/${primarykdc_name^^}/" "${smb_file}"
    fi
-   if [ "$(grep -c CONFIGDIR "${smb_file}")" > 0 ]; then
-      sed -i "s/CONFIGDIR/${config_dir}/" "${smb_file}"
+   if [ "$(grep -c KRB5CONFIGDIR "${smb_file}")" > 0 ]; then
+      sed -i 's/KRB5CONFIGDIR/${config_dir}/' "${smb_file}"
    fi
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend clients file"
    local clients_file
    clients_file="/etc/freeradius/3.0/clients.conf"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend clients file: ${clients_file}"
    if [ "$(tail -1 "${clients_file}")" != "\$INCLUDE ${config_dir}/custom_clients.conf" ]; then
       echo "\$INCLUDE ${config_dir}/custom_clients.conf" >> "${clients_file}"
    fi
