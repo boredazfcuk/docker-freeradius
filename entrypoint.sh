@@ -129,9 +129,10 @@ CheckDomainJoin(){
       echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    and enter the password when prompted. This container will restart in 5 minutes"
       sleep 300
       exit 1
+   fi
 }
 
-LaunchFreeRadius (){
+LaunchFreeRadius(){
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    ***** Configuration of FreeRadius container launch environment complete *****"
    if [ -z "${1}" ]; then
       echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Starting FreeRadius"
