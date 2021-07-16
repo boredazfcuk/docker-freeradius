@@ -27,7 +27,7 @@ Initialise(){
 AddFilterStripUsername(){
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Add strip_username function to filters"
    local filter_file
-   filter_file="/etc/freeradius/3.0/policy.d/filter"
+   filter_file="${config_dir}/filter"
    if [ "$(grep -c filter_strip_username "${filter_file}")" = 0 ]; then
       {
          echo
@@ -52,7 +52,7 @@ AddFilterStripUsername(){
 
 AmendConfig(){
    local default_file
-   default_file="/etc/freeradius/3.0/sites-available/default"
+   default_file="${config_dir}/default"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend default file: ${default_file}"
    if [ "$(grep -c DOMAINNAME "${default_file}")" > 0 ]; then
       sed -i "s/DOMAINNAME/${domain_name}/" "${default_file}"
@@ -61,7 +61,7 @@ AmendConfig(){
       sed -i "s/TLDNAME/${tld_name}/" "${default_file}"
    fi
    local inner_tunnel_file
-   inner_tunnel_file="/etc/freeradius/3.0/sites-available/inner-tunnel"
+   inner_tunnel_file="${config_dir}/inner-tunnel"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend inner-tunnel file: ${inner_tunnel_file}"
    if [ "$(grep -c DOMAINNAME "${inner_tunnel_file}")" > 0 ]; then
       sed -i "s/DOMAINNAME/${domain_name}/" "${inner_tunnel_file}"
@@ -70,7 +70,7 @@ AmendConfig(){
       sed -i "s/TLDNAME/${tld_name}/" "${inner_tunnel_file}"
    fi
    local mschap_file
-   mschap_file="/etc/freeradius/3.0/mods-available/mschap"
+   mschap_file="${config_dir}/mschap"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend mschap file: ${mschap_file}"
    if [ "$(grep -c DOMAINNAME "${mschap_file}")" > 0 ]; then
       sed -i "s/DOMAINNAME/${domain_name^^}/g" "${mschap_file}"
@@ -83,7 +83,7 @@ AmendConfig(){
    fi
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend ntlm_auth file"
    local ntlm_auth_file
-   ntlm_auth_file="/etc/freeradius/3.0/mods-available/ntlm_auth"
+   ntlm_auth_file="${config_dir}/ntlm_auth"
    if [ "$(grep -c DOMAINNAME "${ntlm_auth_file}")" > 0 ]; then
       sed -i "s/DOMAINNAME/${domain_name^^}/" "${ntlm_auth_file}"
    fi
@@ -113,7 +113,7 @@ AmendConfig(){
       sed -i "/SECONDARYKDC/d" "${krb5_file}"
    fi
    local smb_file
-   smb_file="/etc/samba/smb.conf"
+   smb_file="${config_dir}/smb.conf"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend smb file: ${smb_file}"
    if [ "$(grep -c LCDOMAINNAME "${smb_file}")" > 0 ]; then
       sed -i "s/LCDOMAINNAME/${domain_name,,}/" "${smb_file}"
@@ -131,7 +131,7 @@ AmendConfig(){
       sed -i 's/KRB5CONFIGDIR/${config_dir}/' "${smb_file}"
    fi
    local clients_file
-   clients_file="/etc/freeradius/3.0/clients.conf"
+   clients_file="${config_dir]/clients.conf"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend clients file: ${clients_file}"
    if [ "$(tail -1 "${clients_file}")" != "\$INCLUDE ${config_dir}/custom_clients.conf" ]; then
       echo "\$INCLUDE ${config_dir}/custom_clients.conf" >> "${clients_file}"
