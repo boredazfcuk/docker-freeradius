@@ -3,6 +3,7 @@
 ##### Functions #####
 Initialise(){
    echo
+   dns_name="${domain_name}.${tld_name}"
    lan_ip="$(hostname -i)"
    samba_name="$(hostname)"
    join_status="$(net ads testjoin -k 2>&1)"
@@ -13,10 +14,12 @@ Initialise(){
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Samba name: ${samba_name}"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    LAN IP Address: ${lan_ip}"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Time zone: ${TZ:=UTC}"
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    DNS name: ${dns_name}"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Domain name: ${domain_name}"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    TLD name: ${tld_name}"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    DNS name: ${dns_name}"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Primary KDC: ${primarykdc_name}"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Domain Computers SID: ${domain_computers_sid}"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    VPN Users SID: ${vpn_users_sid}"
    if [ "${secondarykdc_name}" ]; then echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Secondary KDC: ${secondarykdc_name}"; fi
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Domain member status: $(echo ${join_status} | cut -d':' -f 1)"
    if [ "${join_status}" != "Join is OK" ]; then
