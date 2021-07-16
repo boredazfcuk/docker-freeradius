@@ -14,7 +14,7 @@ echo "$(date '+%d/%m/%Y - %H:%M:%S') | Install requirements" && \
    mkdir --parents "${config_dir}" && \
    touch "${config_dir}/users.vpn" && \
    ln -s "${config_dir}/users.vpn" "/etc/freeradius/3.0/users.vpn" && \
-   sed -i '/$INCLUDE users.other/a $INCLUDE ${config_dir}/users.vpn' "/etc/freeradius/3.0/mods-config/files/authorize" && \
+   sed -i "/\$INCLUDE users.other/a \$INCLUDE ${config_dir}/users.vpn" "/etc/freeradius/3.0/mods-config/files/authorize" && \
    apt-get clean
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
