@@ -6,11 +6,12 @@ Initialise(){
    dns_name="${domain_name}.${tld_name}"
    lan_ip="$(hostname -i)"
    samba_name="$(hostname)"
-   join_status="$(net ads testjoin -k 2>&1 | tail -1 | cut -d':' -f 1)"
+   join_status="$(net ads testjoin --kerberos 2>&1 | tail -1 | cut -d':' -f 1)"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    ***** boredazfcuk/freeradius container for freeradius started *****"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    ***** $(realpath "${0}") date: $(date --reference=$(realpath "${0}") +%Y/%m/%d_%H:%M) *****"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    ***** $(realpath "${0}") hash: $(md5sum $(realpath "${0}") | awk '{print $1}') *****"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    $(cat /etc/*-release | grep "^NAME" | sed 's/NAME=//g' | sed 's/"//g') $(cat /etc/*-release | grep "VERSION_ID" | sed 's/VERSION_ID=//g' | sed 's/"//g')"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Configuration directory: ${config_dir}"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Samba name: ${samba_name}"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    LAN IP Address: ${lan_ip}"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Time zone: ${TZ:=UTC}"
@@ -88,7 +89,7 @@ AmendConfig(){
    fi
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend krb5 file"
    local krb5_file
-   krb5_file="/etc/krb5.conf"
+   krb5_file="${config_dir}/krb5.conf"
    if [ "$(grep -c LCDOMAINNAME "${krb5_file}")" > 0 ]; then
       sed -i "s/LCDOMAINNAME/${domain_name,,}/" "${krb5_file}"
    fi
@@ -126,6 +127,9 @@ AmendConfig(){
    if [ "$(grep -c PRIMARYKDC "${smb_file}")" > 0 ]; then
       sed -i "s/PRIMARYKDC/${primarykdc_name^^}/" "${smb_file}"
    fi
+   if [ "$(grep -c CONFIGDIR "${smb_file}")" > 0 ]; then
+      sed -i "s/CONFIGDIR/${config_dir}/" "${smb_file}"
+   fi
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend clients file"
    local clients_file
    clients_file="/etc/freeradius/3.0/clients.conf"
@@ -140,7 +144,7 @@ TestDomainJoin(){
       echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR:   ***** Container ${samba_name} is not joined to the domain *****"
       echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    To join the domain, connect to the container with: docker exec -it <container_name> /bin/bash"
       echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    E.g. docker exec -it freeradius /bin/bash"
-      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Then from the terminal prompt, issue the command: net ads join -U Administrator@${dns_name}"
+      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Then from the terminal prompt, issue the command: net ads join --user Administrator@${dns_name} --no-dns-updates"
       echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    ...and enter the password when prompted. This container will restart in 5 minutes"
       sleep 300
       exit 1
