@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$(netstat -plnt | grep -c 1812)" -ne 1 ]; then
+if [ "$(netstat -plnu4 | grep -c 0.0.0.0:1812)" -ne 1 ]; then
    echo "Freeradius not listening on port 1812"
    exit 1
 fi
