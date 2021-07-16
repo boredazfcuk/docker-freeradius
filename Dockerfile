@@ -25,7 +25,7 @@ COPY inner-tunnel /etc/freeradius/3.0/sites-available/inner-tunnel
 COPY mschap /etc/freeradius/3.0/mods-available/mschap
 COPY ntlm_auth /etc/freeradius/3.0/mods-available/ntlm_auth
 COPY nsswitch.conf /etc/nsswitch.conf
-COPY krb5.conf /etc/krb5.conf
+COPY krb5.conf "${config_dir}/krb5.conf"
 COPY smb.conf /etc/samba/smb.conf
 
 RUN echo "$(date '+%d/%m/%Y - %H:%M:%S') | Set permissions on startup script and healthcheck" && \
