@@ -21,19 +21,10 @@ Initialise(){
    if [ "${secondarykdc_name}" ]; then echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Secondary KDC: ${secondarykdc_name}.${dns_name}"; fi
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Domain Computers SID: ${domain_computers_sid}"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    VPN Users SID: ${vpn_users_sid}"
-   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Domain member status: $(echo ${join_status} | cut -d':' -f 1)"
-   if [ "${join_status}" != "Join is OK" ]; then
-      echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR:   ***** Container ${samba_name} is not joined to the domain *****"
-      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    To join the domain, connect to the container with: docker exec -it <container_name> /bin/bash"
-      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    E.g. docker exec -it freeradius /bin/bash"
-      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Then from the terminal prompt, issue the command: net ads join -U Administrator@${dns_name}"
-      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    ...and enter the password when prompted. This container will restart in 5 minutes"
-      sleep 300
-      exit 1
-   fi
 }
 
 AddFilterStripUsername(){
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Add strip_username function to filters"
    local filter_file
    filter_file="/etc/freeradius/3.0/policy.d/filter"
    if [ "$(grep -c filter_strip_username "${filter_file}")" = 0 ]; then
@@ -59,7 +50,7 @@ AddFilterStripUsername(){
 }
 
 AmendConfig(){
-
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend default file"
    local default_file
    default_file="/etc/freeradius/3.0/sites-available/default"
    if [ "$(grep -c DOMAINNAME "${default_file}")" > 0 ]; then
@@ -68,7 +59,7 @@ AmendConfig(){
    if [ "$(grep -c TLDNAME "${default_file}")" > 0 ]; then
       sed -i "s/TLDNAME/${tld_name}/" "${default_file}"
    fi
-
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend inner-tunnel file"
    local inner_tunnel_file
    inner_tunnel_file="/etc/freeradius/3.0/sites-available/inner-tunnel"
    if [ "$(grep -c DOMAINNAME "${inner_tunnel_file}")" > 0 ]; then
@@ -77,7 +68,7 @@ AmendConfig(){
    if [ "$(grep -c TLDNAME "${inner_tunnel_file}")" > 0 ]; then
       sed -i "s/TLDNAME/${tld_name}/" "${inner_tunnel_file}"
    fi
-
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend mschap file"
    local mschap_file
    mschap_file="/etc/freeradius/3.0/mods-available/mschap"
    if [ "$(grep -c DOMAINNAME "${mschap_file}")" > 0 ]; then
@@ -89,13 +80,13 @@ AmendConfig(){
    if [ "$(grep -c VPNUSERSSID "${mschap_file}")" > 0 ]; then
       sed -i "s/VPNUSERSSID/${vpn_users_sid}/" "${mschap_file}"
    fi
-
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend ntlm_auth file"
    local ntlm_auth_file
    ntlm_auth_file="/etc/freeradius/3.0/mods-available/ntlm_auth"
    if [ "$(grep -c DOMAINNAME "${ntlm_auth_file}")" > 0 ]; then
       sed -i "s/DOMAINNAME/${domain_name^^}/" "${ntlm_auth_file}"
    fi
-
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend krb5 file"
    local krb5_file
    krb5_file="/etc/krb5.conf"
    if [ "$(grep -c LCDOMAINNAME "${krb5_file}")" > 0 ]; then
@@ -120,7 +111,7 @@ AmendConfig(){
    else
       sed -i "/SECONDARYKDC/d" "${krb5_file}"
    fi
-
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend smb file"
    local smb_file
    smb_file="/etc/samba/smb.conf"
    if [ "$(grep -c LCDOMAINNAME "${smb_file}")" > 0 ]; then
@@ -135,7 +126,19 @@ AmendConfig(){
    if [ "$(grep -c PRIMARYKDC "${smb_file}")" > 0 ]; then
       sed -i "s/PRIMARYKDC/${primarykdc_name^^}/" "${smb_file}"
    fi
+}
 
+TetsDomainJoin(){
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Domain member status: $(echo ${join_status} | cut -d':' -f 1)"
+   if [ "${join_status}" != "Join is OK" ]; then
+      echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR:   ***** Container ${samba_name} is not joined to the domain *****"
+      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    To join the domain, connect to the container with: docker exec -it <container_name> /bin/bash"
+      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    E.g. docker exec -it freeradius /bin/bash"
+      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Then from the terminal prompt, issue the command: net ads join -U Administrator@${dns_name}"
+      echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    ...and enter the password when prompted. This container will restart in 5 minutes"
+      sleep 300
+      exit 1
+   fi
 }
 
 LaunchFreeRadius(){
@@ -152,4 +155,5 @@ LaunchFreeRadius(){
 Initialise
 AddFilterStripUsername
 AmendConfig
+TestDomainJoin
 LaunchFreeRadius
