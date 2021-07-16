@@ -12,7 +12,7 @@ echo "$(date '+%d/%m/%Y - %H:%M:%S') | Install requirements" && \
    apt-get update && \
    apt-get install -y ${app_dependencies} && \
    mkdir --parents "${config_dir}" && \
-   touch "${config_dir}/users.vpn" && \
+   touch "${config_dir}/users.vpn" "${config_dir}/custom_clients.conf" && \
    ln -s "${config_dir}/users.vpn" "/etc/freeradius/3.0/users.vpn" && \
    sed -i "/\$INCLUDE users.other/a \$INCLUDE ${config_dir}/users.vpn" "/etc/freeradius/3.0/mods-config/files/authorize" && \
    apt-get clean

@@ -16,7 +16,7 @@ services:
          - primarykdc_name=$primarykdc_name
          - secondarykdc_name=$secondarykdc_name
       ports:
-         - "1812:1812"
+         - 1812:1812/udp
       image: boredazfcuk/freeradius
       healthcheck:
          test: /usr/local/bin/healthcheck.sh

@@ -21,6 +21,7 @@ Initialise(){
    if [ "${secondarykdc_name}" ]; then echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Secondary KDC: ${secondarykdc_name}.${dns_name}"; fi
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Domain Computers SID: ${domain_computers_sid}"
    echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    VPN Users SID: ${vpn_users_sid}"
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Starting Winbind: $(/etc/init.d.winbind start)"
 }
 
 AddFilterStripUsername(){
@@ -125,6 +126,12 @@ AmendConfig(){
    fi
    if [ "$(grep -c PRIMARYKDC "${smb_file}")" > 0 ]; then
       sed -i "s/PRIMARYKDC/${primarykdc_name^^}/" "${smb_file}"
+   fi
+   echo "$(date '+%Y-%m-%d %H:%M:%S') INFO:    Amend clients file"
+   local clients_file
+   clients_file="/etc/freeradius/3.0/clients.conf"
+   if [ "$(tail -1 "${clients_file}")" != "\$INCLUDE ${config_dir}/custom_clients.conf" ]; then
+      echo "\$INCLUDE ${config_dir}/custom_clients.conf" >> "${clients_file}"
    fi
 }
 
