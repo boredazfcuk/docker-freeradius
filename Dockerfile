@@ -4,7 +4,7 @@ MAINTAINER boredazfcuk
 ENV config_dir="/config"
 
 # Container version serves no real purpose. Increment to force a container rebuild.
-ARG container_version="1.0.0"
+ARG container_version="1.0.1"
 ARG app_dependencies="freeradius samba winbind net-tools"
 
 RUN echo "$(date '+%d/%m/%Y - %H:%M:%S') | ***** BUILD STARTED FOR freeradius ${container_version} *****" && \
